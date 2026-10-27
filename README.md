@@ -17,9 +17,16 @@ toolbench/
 ├── contact.html            contact details      (edit this)
 ├── privacy.html            privacy policy, incl. AdSense cookie disclosure
 ├── terms.html              terms of use
+├── 404.html                served automatically via not_found_handling
 ├── robots.txt
 ├── sitemap.xml
 ├── ads.txt                 placeholder — fill in after AdSense approval
+│
+├── wrangler.jsonc          Worker config: static assets, 404, observability
+├── .assetsignore           keeps .git and source out of the public bundle
+├── worker/
+│   └── index.js            applies security + cache headers to every response
+│
 ├── assets/
 │   ├── style.css           full design system, light + dark, CSS variables
 │   └── app.js              theme toggle, search, copy buttons, ad bootstrap
@@ -45,9 +52,9 @@ Everything below is a placeholder. Nothing works correctly until they are change
 
 | What | Where | Current value |
 |---|---|---|
-| Domain | `canonical`, `og:url`, `sitemap.xml`, `robots.txt` | `toolbench-tools.pages.dev` |
+| Domain | `canonical`, `og:url`, `sitemap.xml`, `robots.txt` | `toolbench-tools.yuanhengwcn.workers.dev` |
 | Brand name | `brand` element in every page, `<title>` tags | `Toolbench` |
-| Email | `contact.html`, privacy/terms references | `hello@toolbench-tools.pages.dev` |
+| Email | `contact.html`, privacy/terms references | `hello@toolbench-tools.yuanhengwcn.workers.dev` — **must be a real mailbox before you apply to AdSense** |
 | `about.html` author section | the paragraph under "Who runs this site" | generic text |
 | AdSense publisher ID | `assets/app.js`, `AD_CLIENT` constant | empty |
 | `ads.txt` | uncomment the line and add your pub ID | commented out |
@@ -83,61 +90,70 @@ python -m http.server 8080
 
 ## Deploy
 
-Three routes. Pick by how often you expect to ship.
+This deploys as a **Cloudflare Worker with static assets**, not as a Pages
+project. That distinction is the reason there is a `worker/` directory.
 
-### Option 1 — Git auto-deploy (set up once, then just push)
+### How the pieces fit
 
-1. Create an **empty** GitHub repo named `toolbench-tools` — no README, no
-   .gitignore, no license. It must be empty or the first push will conflict.
-2. From this folder:
+| File | Job |
+|---|---|
+| `wrangler.jsonc` | `assets.directory` = repo root, entry = `worker/index.js`, `not_found_handling` = `404-page` |
+| `worker/index.js` | fetches from the `ASSETS` binding, then adds security and cache headers |
+| `.assetsignore` | keeps `.git`, `worker/`, `scripts/` and the docs out of the public bundle |
 
-   ```bash
-   git remote add origin https://github.com/<your-username>/toolbench-tools.git
+A deploy should upload **22 files**. If the build log ever reports something near
+143, `.assetsignore` has stopped matching and the repository history is being
+served again — check `https://<your-domain>/.git/config` immediately and treat a
+200 response as an incident.
+
+### Git auto-deploy
+
+1. Create an **empty** GitHub repo (no README, no .gitignore).
+2. ```bash
+   git remote add origin https://github.com/<your-username>/<repo>.git
    git push -u origin main
    ```
+3. Cloudflare → Compute (Workers & Pages) → Create → **Worker** → Connect to Git.
+4. Build command: **None**. Deploy command: **`npx wrangler deploy`**.
+5. Every push to `main` redeploys. Other branches get preview URLs.
 
-3. Cloudflare dashboard → Compute (Workers & Pages) → Create → Pages →
-   **Connect to Git** → authorise GitHub → pick the repo.
-4. Settings: Framework preset **None**, Build command **empty**, Build output
-   directory **`/`**. Save and Deploy.
-
-The first build takes about 30 seconds. After that every `git push` to `main`
-redeploys automatically, and pushes to other branches produce preview URLs you
-can review before merging.
-
-**The project name must match the domain in the files.** If you name the
-Cloudflare project something other than `toolbench-tools`, the site will live at
-a different `*.pages.dev` host — run this once to fix every canonical URL:
+### Manual deploy
 
 ```bash
-python scripts/set-domain.py your-actual-project.pages.dev
+npx wrangler deploy
 ```
 
-### Option 2 — Wrangler CLI
+### Why Workers and not Pages
 
-```bash
-npm install -g wrangler
-wrangler login
-wrangler pages deploy . --project-name=toolbench-tools
-```
+Pages is the older static-hosting product. It reads a `_headers` file for you,
+which is exactly what this project originally used. But the dashboard now steers
+new projects into Workers, and Pages sits behind the Workers UI. Rather than
+fight that navigation, the project uses Workers static assets directly.
 
-Useful when you want to ship without a commit, or from a machine that is not
-set up with git credentials.
+Three consequences worth knowing:
 
-### Option 3 — Drag and drop
+- **`_headers` does not work here.** There is no such file in this repo. The
+  equivalent rules live in `worker/index.js` — edit headers there.
+- **The domain is `<project>.<account>.workers.dev`**, not `<project>.pages.dev`.
+  Every canonical URL must match it; `scripts/set-domain.py` handles that.
+- **The 404 page requires `not_found_handling: "404-page"`** in `wrangler.jsonc`.
+  Without it the platform returns a bare 404 body and `404.html` is ignored.
 
-Cloudflare dashboard → Create → Pages → **Upload assets** → drop this folder in.
-No git, no CLI. The catch is that every update means re-uploading the whole
-folder by hand.
+If you ever move to Pages instead: delete `worker/` and `wrangler.jsonc`, recreate
+a `_headers` file from the rules in `worker/index.js`, and run
+`scripts/set-domain.py` with the new host.
 
 ### Custom domain later
 
-Under the Pages project's *Custom domains* tab, add the domain and point its
-nameservers at Cloudflare (or use the CNAME it gives you). Certificates issue
-automatically. Then run `scripts/set-domain.py` with the new host so `canonical`,
-`sitemap.xml` and `robots.txt` stay in sync.
+Add the domain under the Worker's **Settings → Domains & Routes → Add custom
+domain**. Certificates issue automatically once DNS resolves. Then update every
+absolute URL in one command:
 
-Also redirect `www` to the apex (or the reverse) with a Cloudflare redirect rule.
+```bash
+python scripts/set-domain.py yourdomain.com
+```
+
+Then redirect `www` to the apex (or the reverse) with a Cloudflare redirect rule.
 Serving both with a 200 makes them duplicate content in Google's eyes.
 
 ### Why Cloudflare over Vercel

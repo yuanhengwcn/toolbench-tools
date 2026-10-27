@@ -1,0 +1,23 @@
+# Files listed here are excluded from the Workers static asset bundle.
+# Without this, `wrangler deploy` treats the repository root as the public
+# directory and uploads .git/ along with the site — which makes the whole
+# commit history downloadable over HTTP.
+
+# version control — never serve this
+.git
+.git/**
+.gitignore
+.gitattributes
+
+# local wrangler state
+.wrangler
+.wrangler/**
+
+# source that must not be reachable over HTTP
+worker
+worker/**
+scripts
+scripts/**
+wrangler.jsonc
+.assetsignore
+README.md

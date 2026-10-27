@@ -8,4 +8,4 @@ Allow: /
 User-agent: AdsBot-Google
 Allow: /
 
-Sitemap: https://toolbench-tools.pages.dev/sitemap.xml
+Sitemap: https://toolbench-tools.yuanhengwcn.workers.dev/sitemap.xml
