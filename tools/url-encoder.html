@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>URL Encoder &amp; Decoder — Percent-Encoding Online</title>
+<meta name="description" content="Percent-encode or decode URLs and query strings. Explains the difference between encodeURI and encodeURIComponent, which is where most broken links come from.">
+<link rel="canonical" href="https://toolbench-tools.pages.dev/tools/url-encoder.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="URL Encoder &amp; Decoder">
+<meta property="og:description" content="Percent-encode URLs and query strings, with UTF-8 support.">
+<link rel="stylesheet" href="../assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('tb-theme');if(!t){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="../index.html"><span class="brand-mark">T</span>Toolbench</a>
+    <nav class="nav">
+      <a href="../index.html" class="nav-hide-sm">All tools</a>
+      <a href="../about.html" class="nav-hide-sm">About</a>
+      <a href="../contact.html" class="nav-hide-sm">Contact</a>
+      <button class="theme-toggle" type="button" aria-label="Toggle theme">
+        <svg class="ico-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="ico-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="tool-head">
+    <div class="breadcrumb"><a href="../index.html">Tools</a> / URL Encoder</div>
+    <h1>URL Encoder &amp; Decoder</h1>
+    <p>Percent-encode text for use in a URL, or decode an existing one back to readable characters.</p>
+  </div>
+
+  <div class="panel">
+    <div class="panel-row">
+      <div>
+        <label class="field-label" for="in">Input</label>
+        <textarea id="in" spellcheck="false" style="min-height:160px" placeholder="https://example.com/search?q=hello world&lang=中文"></textarea>
+      </div>
+      <div>
+        <label class="field-label" for="out">Output</label>
+        <textarea id="out" spellcheck="false" readonly style="min-height:160px" placeholder="Result appears here"></textarea>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btn-comp" type="button">Encode value</button>
+      <button class="btn" id="btn-uri" type="button">Encode full URL</button>
+      <button class="btn" id="btn-decode" type="button">Decode</button>
+      <button class="btn" id="btn-plus" type="button">Decode + as space</button>
+      <button class="btn" id="btn-copy" type="button" data-copy="#out">Copy</button>
+      <button class="btn" id="btn-swap" type="button">Swap</button>
+      <span class="status" id="status"></span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <label class="field-label">URL breakdown</label>
+    <div id="breakdown" style="font-size:13.5px;color:var(--text-faint)">Enter an absolute URL above to see its parts.</div>
+  </div>
+
+  <div class="ad-slot" data-ad-slot="1234567898">Ad slot &mdash; in-article</div>
+
+  <section class="prose">
+    <h2>encodeURIComponent versus encodeURI</h2>
+    <p>These two functions are the source of most broken links, and the difference is simple once you see it laid out:</p>
+    <ul>
+      <li><strong>encodeURI</strong> leaves URL syntax characters alone — <code>:</code> <code>/</code> <code>?</code> <code>&amp;</code> <code>=</code> <code>#</code>. Use it on a <em>complete</em> URL you want to make safe.</li>
+      <li><strong>encodeURIComponent</strong> escapes those characters too. Use it on a <em>value</em> you are about to put inside a query parameter or path segment.</li>
+    </ul>
+    <p>The classic bug: passing a full URL through <code>encodeURIComponent</code> as a redirect target without the receiving server decoding it, which turns <code>https://a.com/cb</code> into <code>https%3A%2F%2Fa.com%2Fcb</code> and produces a 404. The reverse mistake — putting raw <code>&amp;</code> or <code>=</code> into a query value — silently truncates your parameter.</p>
+
+    <h2>What actually needs escaping</h2>
+    <p>RFC 3986 defines a small set of unreserved characters that never need encoding: <code>A–Z a–z 0–9 - _ . ~</code>. Everything else is either reserved (has syntactic meaning) or unsafe. In practice you escape:</p>
+    <ul>
+      <li><strong>Spaces</strong> — as <code>%20</code>, or <code>+</code> in <code>application/x-www-form-urlencoded</code> bodies. This is why "Decode <code>+</code> as space" is a separate button here: the two conventions disagree.</li>
+      <li><strong>Non-ASCII</strong> — UTF-8 bytes, each percent-encoded. 中 becomes <code>%E4%B8%AD</code>.</li>
+      <li><strong>Reserved characters</strong> appearing as data rather than syntax — <code>%</code> itself, <code>&amp;</code>, <code>#</code>, <code>+</code>.</li>
+    </ul>
+
+    <h2>Double encoding, the silent killer</h2>
+    <p>If a string has already been encoded and you encode it again, <code>%20</code> becomes <code>%2520</code>, because <code>%</code> itself encoded to <code>%25</code>. Nothing throws an error — the link just returns the wrong page, or a 404, and you spend an hour bisecting the request. If a decoded value looks like <code>%25</code> where you expected a space, you have double-encoded.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details class="faq-item">
+        <summary>Why does my decoded text show garbled characters?</summary>
+        <p>The bytes were not UTF-8. Older systems encode query strings as GBK, Latin-1 or Shift-JIS, and those byte sequences are not valid UTF-8, so the decoder substitutes replacement characters. There is no way to recover the original from the percent-encoded form alone without knowing the source encoding.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Is a <code>+</code> a space or a plus sign?</summary>
+        <p>It depends on context, which is genuinely unfortunate. In a query string, <code>+</code> conventionally means space (from HTML form encoding). In a path segment, it is a literal plus. When in doubt, use <code>%20</code> for spaces so there is no ambiguity.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Does encoding a URL make it secure?</summary>
+        <p>No. Percent-encoding is purely syntactic. It does not protect against injection, and decoding it is trivial. Validate parameters server-side against an allowlist; never rely on encoding as a defence.</p>
+      </details>
+    </div>
+
+    <h2>Related tools</h2>
+    <div class="tool-grid" style="margin-top:6px">
+      <a class="tool-card" href="base64.html">
+        <h3>Base64 Encoder</h3>
+        <p>The other common way to move binary through text.</p>
+      </a>
+      <a class="tool-card" href="regex-tester.html">
+        <h3>Regex Tester</h3>
+        <p>Validate the parameters after you decode them.</p>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <div>
+      <div class="footer-links">
+        <a href="../index.html">Tools</a>
+        <a href="../about.html">About</a>
+        <a href="../contact.html">Contact</a>
+        <a href="../privacy.html">Privacy</a>
+        <a href="../terms.html">Terms</a>
+      </div>
+      <p class="footer-note" style="margin-top:12px">&copy; <span data-year>2026</span> Toolbench. All processing happens locally in your browser.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/app.js"></script>
+<script>
+(function () {
+  'use strict';
+  var inEl = document.getElementById('in');
+  var outEl = document.getElementById('out');
+  var statusEl = document.getElementById('status');
+  var breakdownEl = document.getElementById('breakdown');
+
+  function setStatus(msg, kind) {
+    statusEl.textContent = msg;
+    statusEl.className = 'status' + (kind ? ' ' + kind : '');
+  }
+
+  function run(fn, label) {
+    var raw = inEl.value;
+    if (!raw) { setStatus('Nothing to convert', 'err'); return; }
+    try {
+      outEl.value = fn(raw);
+      setStatus(label, 'ok');
+    } catch (err) {
+      outEl.value = '';
+      setStatus('Invalid percent-encoding: ' + err.message, 'err');
+    }
+  }
+
+  document.getElementById('btn-comp').addEventListener('click', function () {
+    run(encodeURIComponent, 'Encoded as a value');
+  });
+  document.getElementById('btn-uri').addEventListener('click', function () {
+    run(encodeURI, 'Encoded as a full URL');
+  });
+  document.getElementById('btn-decode').addEventListener('click', function () {
+    run(decodeURIComponent, 'Decoded');
+  });
+  document.getElementById('btn-plus').addEventListener('click', function () {
+    run(function (s) { return decodeURIComponent(s.replace(/\+/g, ' ')); }, 'Decoded, + read as space');
+  });
+
+  document.getElementById('btn-swap').addEventListener('click', function () {
+    if (!outEl.value) { setStatus('Nothing to swap', 'err'); return; }
+    inEl.value = outEl.value;
+    outEl.value = '';
+    setStatus('');
+  });
+
+  function breakdown() {
+    var raw = inEl.value.trim();
+    if (!raw) { breakdownEl.textContent = 'Enter an absolute URL above to see its parts.'; return; }
+    var u;
+    try { u = new URL(raw); }
+    catch (e) {
+      breakdownEl.innerHTML = '<span style="color:var(--danger)">Not an absolute URL — it needs a scheme, e.g. https://…</span>';
+      return;
+    }
+    var rows = [
+      ['Scheme', u.protocol.replace(':', '')],
+      ['Host', u.hostname],
+      ['Port', u.port || '(default for scheme)'],
+      ['Path', u.pathname]
+    ];
+    u.searchParams.forEach(function (v, k) { rows.push(['Query: ' + k, v]); });
+    if (u.hash) rows.push(['Fragment', u.hash.slice(1)]);
+
+    breakdownEl.innerHTML = '<table class="kv"><tbody>' + rows.map(function (r) {
+      return '<tr><td>' + r[0] + '</td><td>' + String(r[1]).replace(/</g, '&lt;') + '</td></tr>';
+    }).join('') + '</tbody></table>';
+  }
+
+  inEl.addEventListener('input', breakdown);
+  breakdown();
+}());
+</script>
+</body>
+</html>

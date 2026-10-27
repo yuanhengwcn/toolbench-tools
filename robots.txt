@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Ad crawlers need to reach every tool page to verify content.
+User-agent: Mediapartners-Google
+Allow: /
+
+User-agent: AdsBot-Google
+Allow: /
+
+Sitemap: https://toolbench-tools.pages.dev/sitemap.xml

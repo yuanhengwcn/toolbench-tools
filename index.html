@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Toolbench — Free Developer Tools That Run in Your Browser</title>
+<meta name="description" content="A growing collection of fast, private, browser-based tools for developers. Format JSON, test regex, decode JWTs, generate hashes and UUIDs, compare text and convert colours — no signup, no upload, no tracking.">
+<link rel="canonical" href="https://toolbench-tools.pages.dev/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Toolbench — Free Developer Tools That Run in Your Browser">
+<meta property="og:description" content="Fast, private, browser-based developer tools. No signup required.">
+<meta property="og:url" content="https://toolbench-tools.pages.dev/">
+<link rel="stylesheet" href="assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('tb-theme');if(!t){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">T</span>
+      Toolbench
+    </a>
+    <nav class="nav">
+      <a href="index.html" class="nav-hide-sm">All tools</a>
+      <a href="about.html" class="nav-hide-sm">About</a>
+      <a href="contact.html" class="nav-hide-sm">Contact</a>
+      <button class="theme-toggle" type="button" aria-label="Toggle theme">
+        <svg class="ico-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="ico-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="hero">
+    <h1>Developer tools that run entirely in your browser</h1>
+    <p>No signup, no file uploads, no server round-trips. Every tool on this site processes your data locally, so nothing you paste ever leaves your machine.</p>
+
+    <div class="search-box">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="tool-search" type="text" placeholder="Search tools…  (press /)" autocomplete="off" aria-label="Search tools">
+    </div>
+  </section>
+
+  <div data-tool-group>
+    <div class="section-label">Data &amp; text</div>
+    <div class="tool-grid">
+
+      <a class="tool-card" href="tools/json-formatter.html" data-keywords="json formatter beautify prettify validate minify lint sort keys">
+        <span class="ico">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v4a2 2 0 0 1-2 2 2 2 0 0 1 2 2v4a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2 2 2 0 0 0-2 2v4a2 2 0 0 1-2 2h-1"/></svg>
+        </span>
+        <h3>JSON Formatter</h3>
+        <p>Beautify, minify and validate JSON with precise error positions.</p>
+      </a>
+
+      <a class="tool-card" href="tools/diff-checker.html" data-keywords="diff compare text difference changed lines merge">
+        <span class="ico">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="7" height="16" rx="1"/><rect x="14" y="4" width="7" height="16" rx="1"/></svg>
+        </span>
+        <h3>Diff Checker</h3>
+        <p>Compare two texts and see which lines were added or removed.</p>
+      </a>
+
+      <a class="tool-card" href="tools/case-converter.html" data-keywords="case converter camelcase snake_case kebab pascal title upper lower">
+        <span class="ico">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
+        </span>
+        <h3>Case Converter</h3>
+        <p>camelCase, snake_case, kebab-case and Title Case in one pass.</p>
+      </a>
+
+      <a class="tool-card" href="tools/url-encoder.html" data-keywords="url encode decode percent encoding uri query string">
+        <span class="ico">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.1 0l3-3a5 5 0 0 0-7.1-7.1L11 5"/><path d="M14 11a5 5 0 0 0-7.1 0l-3 3a5 5 0 0 0 7.1 7.1L13 19"/></svg>
+        </span>
+        <h3>URL Encoder</h3>
+        <p>Percent-encode values and full URLs, then decode them back.</p>
+      </a>
+
+    </div>
+  </div>
+
+  <div data-tool-group>
+    <div class="section-label">Encoding &amp; crypto</div>
+    <div class="tool-grid">
+
+      <a class="tool-card" href="tools/base64.html" data-keywords="base64 encode decode encoder decoder string image data uri">
+        <span class="ico">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13l-3-3"/><path d="M20 16H7l3 3"/></svg>
+        </span>
+        <h3>Base64 Encoder</h3>
+        <p>Encode and decode Base64 with full UTF-8 and URL-safe support.</p>
+      </a>
+
+      <a class="tool-card" href="tools/jwt-decoder.html" data-keywords="jwt json web token decode decode bearer claims exp payload">
+        <span class="ico">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="3.5"/><path d="M10.5 13L20 3.5M17 6l2.5 2.5M14 9l2.5 2.5"/></svg>
+        </span>
+        <h3>JWT Decoder</h3>
+        <p>Read a token's header and claims, with human-readable expiry times.</p>
+      </a>
+
+      <a class="tool-card" href="tools/hash-generator.html" data-keywords="hash md5 sha1 sha256 sha512 checksum digest">
+        <span class="ico">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h16M4 15h16M10 3L8 21M16 3l-2 18"/></svg>
+        </span>
+        <h3>Hash Generator</h3>
+        <p>MD5, SHA-1, SHA-256 and SHA-512 from text or a file.</p>
+      </a>
+
+    </div>
+  </div>
+
+  <div data-tool-group>
+    <div class="section-label">Developer utilities</div>
+    <div class="tool-grid">
+
+      <a class="tool-card" href="tools/regex-tester.html" data-keywords="regex regular expression tester match capture group pattern">
+        <span class="ico">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16M5.3 8l13.4 8M18.7 8L5.3 16"/></svg>
+        </span>
+        <h3>Regex Tester</h3>
+        <p>Live match highlighting, capture groups and exact positions.</p>
+      </a>
+
+      <a class="tool-card" href="tools/uuid-generator.html" data-keywords="uuid guid v4 generator random identifier bulk">
+        <span class="ico">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4.5v9L12 20l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v8M12 12L4 7.5"/></svg>
+        </span>
+        <h3>UUID Generator</h3>
+        <p>Cryptographically random v4 UUIDs, one or thousands at a time.</p>
+      </a>
+
+      <a class="tool-card" href="tools/timestamp-converter.html" data-keywords="unix timestamp epoch converter date time iso 8601 milliseconds">
+        <span class="ico">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+        </span>
+        <h3>Timestamp Converter</h3>
+        <p>Convert Unix epoch time to readable dates in any timezone.</p>
+      </a>
+
+      <a class="tool-card" href="tools/color-converter.html" data-keywords="color colour converter hex rgb hsl hsv contrast wcag">
+        <span class="ico">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/></svg>
+        </span>
+        <h3>Color Converter</h3>
+        <p>HEX, RGB, HSL and HSV with WCAG contrast ratios.</p>
+      </a>
+
+    </div>
+  </div>
+
+  <div id="tool-empty" class="empty-state hidden">No tool matches that search yet.</div>
+
+  <div class="ad-slot" data-ad-slot="1234567890">Ad slot &mdash; leaderboard</div>
+
+  <section class="prose" style="margin-top:44px">
+    <h2>Why browser-based tools</h2>
+    <p>Most online utilities send whatever you paste to a server, process it there, and send the result back. That is convenient for the developer building the site, but it means your API keys, customer records and configuration files travel across the network and sit in someone else's logs.</p>
+    <p>Every tool here is implemented in plain JavaScript and runs inside your own browser tab. You can disconnect from the internet after the page loads and the tools keep working. There is no analytics script watching what you type, and no account to create.</p>
+
+    <h3>What you get</h3>
+    <ul>
+      <li><strong>Nothing leaves your machine.</strong> Input is processed in memory and discarded when you close the tab.</li>
+      <li><strong>No signup or usage caps.</strong> There is no account system, no rate limit and no paywall.</li>
+      <li><strong>Works offline.</strong> Once loaded, the page needs no network access.</li>
+      <li><strong>Keyboard friendly.</strong> Every tool supports standard shortcuts, and the search box opens with <code>/</code>.</li>
+    </ul>
+
+    <h3>What is coming next</h3>
+    <p>A SQL formatter, a cron expression parser, a YAML↔JSON converter, and client-side JWT signature verification using a key you supply locally. If a tool you need is missing, <a href="contact.html">tell me what it is</a> — requests genuinely shape the roadmap.</p>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <div>
+      <div class="footer-links">
+        <a href="index.html">Tools</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+      </div>
+      <p class="footer-note" style="margin-top:12px">
+        &copy; <span data-year>2026</span> Toolbench. All processing happens locally in your browser.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

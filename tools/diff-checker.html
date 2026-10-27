@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diff Checker — Compare Two Texts Line by Line</title>
+<meta name="description" content="Compare two blocks of text and see exactly which lines were added, removed or unchanged. Line-level diff with optional whitespace and case normalisation.">
+<link rel="canonical" href="https://toolbench-tools.pages.dev/tools/diff-checker.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Diff Checker">
+<meta property="og:description" content="Compare two texts and highlight added and removed lines.">
+<link rel="stylesheet" href="../assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('tb-theme');if(!t){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="../index.html"><span class="brand-mark">T</span>Toolbench</a>
+    <nav class="nav">
+      <a href="../index.html" class="nav-hide-sm">All tools</a>
+      <a href="../about.html" class="nav-hide-sm">About</a>
+      <a href="../contact.html" class="nav-hide-sm">Contact</a>
+      <button class="theme-toggle" type="button" aria-label="Toggle theme">
+        <svg class="ico-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="ico-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="tool-head">
+    <div class="breadcrumb"><a href="../index.html">Tools</a> / Diff Checker</div>
+    <h1>Diff Checker</h1>
+    <p>Paste two versions of a text and see which lines differ, with additions and deletions marked inline.</p>
+  </div>
+
+  <div class="panel">
+    <div class="panel-row">
+      <div>
+        <label class="field-label" for="left">Original</label>
+        <textarea id="left" spellcheck="false" style="min-height:180px"></textarea>
+      </div>
+      <div>
+        <label class="field-label" for="right">Changed</label>
+        <textarea id="right" spellcheck="false" style="min-height:180px"></textarea>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btn-compare" type="button">Compare</button>
+      <button class="btn" id="btn-sample" type="button">Load sample</button>
+      <button class="btn" id="btn-clear" type="button">Clear</button>
+      <label style="display:flex;align-items:center;gap:6px;font-size:13.5px;color:var(--text-muted);cursor:pointer">
+        <input type="checkbox" id="opt-ws"> ignore whitespace
+      </label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:13.5px;color:var(--text-muted);cursor:pointer">
+        <input type="checkbox" id="opt-case"> ignore case
+      </label>
+      <span class="status" id="status"></span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <label class="field-label">Result</label>
+    <div class="diff-out" id="output" style="padding:12px;color:var(--text-faint);font-family:var(--sans);font-size:13.5px">
+      Paste two versions above and press Compare.
+    </div>
+  </div>
+
+  <div class="ad-slot" data-ad-slot="1234567901">Ad slot &mdash; in-article</div>
+
+  <section class="prose">
+    <h2>How this comparison works</h2>
+    <p>The tool splits both texts into lines, then computes a longest common subsequence between them. Lines in that subsequence are unchanged; everything else is either an addition (present only on the right) or a deletion (present only on the left). This is the same algorithm family behind <code>git diff</code>, though production diff tools add heuristics to make the output easier to read on large files.</p>
+    <p>The comparison is line-level, not character-level. A single changed character marks the whole line as removed and re-added — which is usually what you want when reviewing a config file, and not what you want when proofreading prose.</p>
+
+    <h2>Why whitespace and case options matter</h2>
+    <p>Most noisy diffs are not real changes. A formatter run that converts tabs to spaces, a line-ending difference (CRLF versus LF), or a key that changed case will light up hundreds of lines that are semantically identical. Ticking <strong>ignore whitespace</strong> normalises runs of spaces and trims line ends before comparing; <strong>ignore case</strong> folds to lowercase. Neither changes what is displayed — only what counts as a match.</p>
+    <p>If enabling both makes your diff disappear entirely, the "change" was formatting. That is worth knowing before you spend time reviewing it.</p>
+
+    <h2>When to use a real diff tool instead</h2>
+    <p>For anything beyond a few hundred lines, use the tool that already knows your file: <code>git diff</code>, VS Code's built-in comparison, or <code>diff -u</code>. They handle binary files, detect moved blocks, integrate with your editor, and do not require copy-pasting content into a browser. This page is for the quick check — two API responses, an environment file, a config that broke in production.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details class="faq-item">
+        <summary>Is there a size limit?</summary>
+        <p>Around 2,000 lines per side. The algorithm's memory use grows with the product of the two line counts, so a 5,000 × 5,000 comparison would need roughly 100 MB and would freeze the tab. Past the limit the tool refuses rather than hanging.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Does it detect moved lines?</summary>
+        <p>No — a moved block shows as a deletion plus an addition in the new position. Detecting moves requires a second alignment pass, which real diff tools do and this one does not.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Why does my diff show every line as changed?</summary>
+        <p>Almost always a line-ending mismatch. Windows CRLF versus Unix LF, or a file saved with a BOM, makes every line differ byte-wise. Re-save with consistent line endings, or tick <strong>ignore whitespace</strong>.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Is my text sent anywhere?</summary>
+        <p>No. The comparison runs in this tab. That matters here more than usual — people diff environment files and configuration containing credentials.</p>
+      </details>
+    </div>
+
+    <h2>Related tools</h2>
+    <div class="tool-grid" style="margin-top:6px">
+      <a class="tool-card" href="json-formatter.html">
+        <h3>JSON Formatter</h3>
+        <p>Normalise both payloads before comparing them.</p>
+      </a>
+      <a class="tool-card" href="regex-tester.html">
+        <h3>Regex Tester</h3>
+        <p>Extract the lines you actually care about.</p>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <div>
+      <div class="footer-links">
+        <a href="../index.html">Tools</a>
+        <a href="../about.html">About</a>
+        <a href="../contact.html">Contact</a>
+        <a href="../privacy.html">Privacy</a>
+        <a href="../terms.html">Terms</a>
+      </div>
+      <p class="footer-note" style="margin-top:12px">&copy; <span data-year>2026</span> Toolbench. All processing happens locally in your browser.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/app.js"></script>
+<script>
+(function () {
+  'use strict';
+  var leftEl = document.getElementById('left');
+  var rightEl = document.getElementById('right');
+  var outEl = document.getElementById('output');
+  var statusEl = document.getElementById('status');
+  var LIMIT = 2000;
+
+  function esc(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function normalise(line) {
+    var s = line;
+    if (document.getElementById('opt-ws').checked) s = s.replace(/\s+/g, ' ').trim();
+    if (document.getElementById('opt-case').checked) s = s.toLowerCase();
+    return s;
+  }
+
+  function compare() {
+    var a = leftEl.value.split('\n');
+    var b = rightEl.value.split('\n');
+
+    if (!leftEl.value && !rightEl.value) {
+      statusEl.textContent = 'Nothing to compare';
+      statusEl.className = 'status err';
+      return;
+    }
+    if (a.length > LIMIT || b.length > LIMIT) {
+      statusEl.textContent = 'Over the ' + LIMIT + '-line limit';
+      statusEl.className = 'status err';
+      return;
+    }
+
+    var ka = a.map(normalise), kb = b.map(normalise);
+    var n = ka.length, m = kb.length;
+    var W = m + 1;
+    var dp = new Int32Array((n + 1) * W);
+
+    for (var i = n - 1; i >= 0; i--) {
+      for (var j = m - 1; j >= 0; j--) {
+        dp[i * W + j] = ka[i] === kb[j]
+          ? dp[(i + 1) * W + j + 1] + 1
+          : Math.max(dp[(i + 1) * W + j], dp[i * W + j + 1]);
+      }
+    }
+
+    var html = [], adds = 0, dels = 0;
+    i = 0; j = 0;
+    while (i < n && j < m) {
+      if (ka[i] === kb[j]) {
+        html.push('<div class="diff-line diff-same">  ' + esc(a[i]) + '</div>');
+        i++; j++;
+      } else if (dp[(i + 1) * W + j] >= dp[i * W + j + 1]) {
+        html.push('<div class="diff-line diff-del">- ' + esc(a[i]) + '</div>');
+        dels++; i++;
+      } else {
+        html.push('<div class="diff-line diff-add">+ ' + esc(b[j]) + '</div>');
+        adds++; j++;
+      }
+    }
+    while (i < n) { html.push('<div class="diff-line diff-del">- ' + esc(a[i]) + '</div>'); dels++; i++; }
+    while (j < m) { html.push('<div class="diff-line diff-add">+ ' + esc(b[j]) + '</div>'); adds++; j++; }
+
+    outEl.innerHTML = html.join('');
+    outEl.style.fontFamily = 'var(--mono)';
+    outEl.style.color = 'var(--text)';
+    statusEl.textContent = adds + ' added, ' + dels + ' removed';
+    statusEl.className = 'status ' + ((adds + dels) ? 'ok' : '');
+  }
+
+  document.getElementById('btn-compare').addEventListener('click', compare);
+  ['opt-ws', 'opt-case'].forEach(function (id) {
+    document.getElementById(id).addEventListener('change', function () {
+      if (leftEl.value || rightEl.value) compare();
+    });
+  });
+
+  document.getElementById('btn-sample').addEventListener('click', function () {
+    leftEl.value = 'server.port=8080\nserver.host=127.0.0.1\nlogging.level=INFO\ncache.enabled=true\ntimeout=30s';
+    rightEl.value = 'server.port=9090\nserver.host=127.0.0.1\nlogging.level=DEBUG\ncache.enabled=true\nmax-connections=200\ntimeout=30s';
+    compare();
+  });
+
+  document.getElementById('btn-clear').addEventListener('click', function () {
+    leftEl.value = '';
+    rightEl.value = '';
+    outEl.innerHTML = 'Paste two versions above and press Compare.';
+    outEl.style.fontFamily = 'var(--sans)';
+    outEl.style.color = 'var(--text-faint)';
+    statusEl.textContent = '';
+  });
+
+  // Ctrl/Cmd+Enter runs the comparison from either box.
+  [leftEl, rightEl].forEach(function (el) {
+    el.addEventListener('keydown', function (e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        compare();
+      }
+    });
+  });
+}());
+</script>
+</body>
+</html>

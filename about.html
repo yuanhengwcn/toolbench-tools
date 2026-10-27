@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About — Toolbench</title>
+<meta name="description" content="Why Toolbench exists, who builds it, and the principles behind every tool on the site.">
+<link rel="canonical" href="https://toolbench-tools.pages.dev/about.html">
+<link rel="stylesheet" href="assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('tb-theme');if(!t){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="index.html"><span class="brand-mark">T</span>Toolbench</a>
+    <nav class="nav">
+      <a href="index.html" class="nav-hide-sm">All tools</a>
+      <a href="about.html" class="nav-hide-sm">About</a>
+      <a href="contact.html" class="nav-hide-sm">Contact</a>
+      <button class="theme-toggle" type="button" aria-label="Toggle theme">
+        <svg class="ico-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="ico-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="tool-head">
+    <h1>About Toolbench</h1>
+    <p>A small collection of tools I wanted to exist.</p>
+  </div>
+
+  <section class="prose">
+
+    <!-- EDIT: replace the paragraph below with your own details. Real, specific
+         author information matters both for AdSense review and for how Google
+         assesses the site's trustworthiness (E-E-A-T). -->
+
+    <h2>Who runs this site</h2>
+    <p>I'm a backend developer working mostly in Java and .NET, building supply-chain software for hospitals. Toolbench is a side project: a place to put the small utilities I kept opening other people's websites for, and to finally own the whole stack of something I use every day.</p>
+    <p>I write the code, the explanations and the mistakes myself. There is no content team and no AI-generated filler — though I do use AI assistance to draft and edit, the same way I'd use a compiler.</p>
+
+    <h2>Why another tool site</h2>
+    <p>Because the existing ones kept losing my input. Paste a JWT into a decoder and it goes to a server; paste a config file into a formatter and it ends up in someone's request log. Most of these tools need nothing but a parser, so there is no good reason for your data to leave the browser.</p>
+    <p>The other annoyance is the interface. A tool should open, work, and get out of the way — no modal asking me to subscribe before I can press a button, no 4,000-word preamble before the input box.</p>
+
+    <h2>The principles</h2>
+    <ul>
+      <li><strong>Local first.</strong> If a tool can run in JavaScript, it runs in JavaScript. No server round-trip, no upload, no queue.</li>
+      <li><strong>Explain the mechanism.</strong> Each tool page says how the underlying operation actually works, including the edge cases that bite people — unit confusion, UTF-8 mishandling, timezone drift.</li>
+      <li><strong>No dark patterns.</strong> No forced signup, no fake countdowns, no "download our app" interstitials.</li>
+      <li><strong>Free, supported by ads.</strong> There are no paid tiers. The site runs on advertising, which is why you will see ad slots on the pages.</li>
+    </ul>
+
+    <h2>How the site is built</h2>
+    <p>Plain HTML, CSS and JavaScript. No framework, no build step, no bundler. Each page is a static file, which means it loads fast on a slow connection and does not break when a dependency publishes a breaking change. Hosting is on a static edge network.</p>
+    <p>That choice is deliberate: a tool that depends on forty npm packages is a tool that will stop working eventually for reasons unrelated to the tool.</p>
+
+    <h2>What I'm working on next</h2>
+    <p>Regex testing with live highlighting, JWT decoding and signature verification, hash generation (MD5/SHA-1/SHA-256), and a proper cron expression parser. After that, whatever people ask for most — the <a href="contact.html">contact page</a> is the input channel for that.</p>
+
+    <h2>Corrections</h2>
+    <p>If a tool produces a wrong result, or an explanation on this site is inaccurate, I want to know. Technical errors are the one thing I take seriously enough to fix the same week.</p>
+
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <div>
+      <div class="footer-links">
+        <a href="index.html">Tools</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+      </div>
+      <p class="footer-note" style="margin-top:12px">&copy; <span data-year>2026</span> Toolbench. All processing happens locally in your browser.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

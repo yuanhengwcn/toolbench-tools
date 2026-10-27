@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JWT Decoder — Inspect Header and Payload Claims Online</title>
+<meta name="description" content="Decode a JSON Web Token to read its header, payload and claims. Shows expiry, issued-at and not-before times in plain English. Decoding only — no signature verification.">
+<link rel="canonical" href="https://toolbench-tools.pages.dev/tools/jwt-decoder.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="JWT Decoder">
+<meta property="og:description" content="Decode JWT header, payload and claims with expiry checks.">
+<link rel="stylesheet" href="../assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('tb-theme');if(!t){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="../index.html"><span class="brand-mark">T</span>Toolbench</a>
+    <nav class="nav">
+      <a href="../index.html" class="nav-hide-sm">All tools</a>
+      <a href="../about.html" class="nav-hide-sm">About</a>
+      <a href="../contact.html" class="nav-hide-sm">Contact</a>
+      <button class="theme-toggle" type="button" aria-label="Toggle theme">
+        <svg class="ico-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="ico-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="tool-head">
+    <div class="breadcrumb"><a href="../index.html">Tools</a> / JWT Decoder</div>
+    <h1>JWT Decoder</h1>
+    <p>Paste a JSON Web Token to read its header and claims, and see exactly when it expires.</p>
+  </div>
+
+  <div class="panel" style="border-color:var(--warning-text);background:var(--warning-soft)">
+    <p style="margin:0;font-size:13.5px;color:var(--warning-text)">
+      <strong>Decoding is not verification.</strong> This tool reads the token the same way anyone holding it can. It does not check the signature, so a token shown as "valid" here could still be forged. Never treat a decoded token as proof of identity.
+    </p>
+  </div>
+
+  <div class="panel">
+    <label class="field-label" for="token">Token</label>
+    <textarea id="token" spellcheck="false" style="min-height:110px" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"></textarea>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btn-decode" type="button">Decode</button>
+      <button class="btn" id="btn-sample" type="button">Load sample</button>
+      <button class="btn" id="btn-clear" type="button">Clear</button>
+      <span class="status" id="status"></span>
+    </div>
+  </div>
+
+  <div id="result" class="hidden">
+    <div class="panel">
+      <label class="field-label">Token summary</label>
+      <table class="kv"><tbody id="summary"></tbody></table>
+    </div>
+
+    <div class="grid-2">
+      <div class="panel">
+        <label class="field-label" for="hdr">Header</label>
+        <textarea id="hdr" readonly spellcheck="false" style="min-height:170px"></textarea>
+      </div>
+      <div class="panel">
+        <label class="field-label" for="pl">Payload</label>
+        <textarea id="pl" readonly spellcheck="false" style="min-height:170px"></textarea>
+      </div>
+    </div>
+
+    <div class="panel">
+      <label class="field-label" for="sig">Signature (base64url, not decoded)</label>
+      <textarea id="sig" readonly spellcheck="false" style="min-height:60px"></textarea>
+    </div>
+  </div>
+
+  <div class="ad-slot" data-ad-slot="1234567896">Ad slot &mdash; in-article</div>
+
+  <section class="prose">
+    <h2>What a JWT actually contains</h2>
+    <p>A JSON Web Token is three base64url-encoded segments joined by dots: <code>header.payload.signature</code>. The first two are just JSON — base64url encoding is reversible by anyone, which is why a token must never carry secrets in its payload.</p>
+    <p>The header declares the signing algorithm (<code>alg</code>) and token type. The payload holds claims — statements about the subject, the issuer, and validity windows. The signature is a cryptographic tag over the first two segments, and it is the only part that provides any guarantee.</p>
+
+    <h2>Registered claims and what they mean</h2>
+    <table class="kv" style="margin-bottom:16px">
+      <tbody>
+        <tr><td><code>iss</code></td><td>Issuer — who created the token</td></tr>
+        <tr><td><code>sub</code></td><td>Subject — usually the user ID</td></tr>
+        <tr><td><code>aud</code></td><td>Audience — who the token is for</td></tr>
+        <tr><td><code>exp</code></td><td>Expiry, seconds since epoch</td></tr>
+        <tr><td><code>nbf</code></td><td>Not before, seconds since epoch</td></tr>
+        <tr><td><code>iat</code></td><td>Issued at, seconds since epoch</td></tr>
+        <tr><td><code>jti</code></td><td>Unique token ID, used for revocation</td></tr>
+      </tbody>
+    </table>
+    <p>All three time claims are numeric dates in <em>seconds</em>, not milliseconds. Getting that wrong is the single most common JWT bug: multiplying by 1000 in one place and not the other puts your token 50,000 years out.</p>
+
+    <h2>How a server should validate a token</h2>
+    <ol>
+      <li>Split the token and decode the header to read <code>alg</code>.</li>
+      <li><strong>Reject <code>alg: none</code></strong>, and pin the algorithm to the one you expect — never let the token choose it. This is the classic algorithm-confusion attack.</li>
+      <li>Verify the signature with the correct key (HMAC secret, or the issuer's public key fetched from JWKS).</li>
+      <li>Check <code>exp</code>, and <code>nbf</code> if present.</li>
+      <li>Check <code>iss</code> and <code>aud</code> match your service, not just that they exist.</li>
+    </ol>
+    <p>Steps 2 through 5 are all things a decoder cannot do for you. That is the whole point of the warning above.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details class="faq-item">
+        <summary>Is it safe to paste a production token here?</summary>
+        <p>This tool decodes in your browser and transmits nothing, so the token does not leave your machine. That said, a live token is a bearer credential — anyone who has it can act as that user until it expires. Prefer an expired or test token when you can.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Why does my token show as expired when it should not be?</summary>
+        <p>Either genuine expiry, clock skew between the issuing server and yours, or a units mistake. Compare <code>exp</code> against the current epoch value on the <a href="timestamp-converter.html">timestamp converter</a> — if the difference is measured in decades rather than minutes, the value was written in milliseconds.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Can this tool verify the signature?</summary>
+        <p>Not in this version. Verification needs the signing key, and asking users to paste a secret into a web page is a bad habit to encourage. Do it server-side with a maintained library, or in a local script.</p>
+      </details>
+      <details class="faq-item">
+        <summary>What is the difference between JWT and JWE?</summary>
+        <p>JWT (JWS) is signed — the contents are readable but tamper-evident. JWE is encrypted — the payload is opaque without the decryption key. If confidentiality matters, you need JWE; a plain JWT is the wrong tool, no matter what the signature says.</p>
+      </details>
+    </div>
+
+    <h2>Related tools</h2>
+    <div class="tool-grid" style="margin-top:6px">
+      <a class="tool-card" href="base64.html">
+        <h3>Base64 Encoder</h3>
+        <p>Decode individual segments by hand.</p>
+      </a>
+      <a class="tool-card" href="timestamp-converter.html">
+        <h3>Timestamp Converter</h3>
+        <p>Turn exp and iat values into readable dates.</p>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <div>
+      <div class="footer-links">
+        <a href="../index.html">Tools</a>
+        <a href="../about.html">About</a>
+        <a href="../contact.html">Contact</a>
+        <a href="../privacy.html">Privacy</a>
+        <a href="../terms.html">Terms</a>
+      </div>
+      <p class="footer-note" style="margin-top:12px">&copy; <span data-year>2026</span> Toolbench. All processing happens locally in your browser.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/app.js"></script>
+<script>
+(function () {
+  'use strict';
+  var tokenEl = document.getElementById('token');
+  var statusEl = document.getElementById('status');
+  var resultEl = document.getElementById('result');
+
+  function setStatus(msg, kind) {
+    statusEl.textContent = msg;
+    statusEl.className = 'status' + (kind ? ' ' + kind : '');
+  }
+
+  function b64urlDecode(seg) {
+    var s = seg.replace(/-/g, '+').replace(/_/g, '/');
+    while (s.length % 4) s += '=';
+    var bin = atob(s);
+    var bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder('utf-8').decode(bytes);
+  }
+
+  function fmtRelative(seconds) {
+    var diff = Math.round(seconds - Date.now() / 1000);
+    var abs = Math.abs(diff);
+    var units = [[31536000, 'year'], [2592000, 'month'], [86400, 'day'], [3600, 'hour'], [60, 'minute']];
+    for (var i = 0; i < units.length; i++) {
+      if (abs >= units[i][0]) {
+        var v = Math.round(abs / units[i][0]);
+        return diff >= 0 ? 'in ' + v + ' ' + units[i][1] + (v === 1 ? '' : 's')
+                         : v + ' ' + units[i][1] + (v === 1 ? '' : 's') + ' ago';
+      }
+    }
+    return abs + ' seconds ' + (diff >= 0 ? 'from now' : 'ago');
+  }
+
+  function row(label, value) {
+    return '<tr><td>' + label + '</td><td>' + value + '</td></tr>';
+  }
+
+  function decode() {
+    var raw = tokenEl.value.trim().replace(/^Bearer\s+/i, '');
+    if (!raw) {
+      resultEl.classList.add('hidden');
+      setStatus('');
+      return;
+    }
+
+    var parts = raw.split('.');
+    if (parts.length !== 3) {
+      resultEl.classList.add('hidden');
+      setStatus('A JWT must have exactly 3 dot-separated segments — found ' + parts.length, 'err');
+      return;
+    }
+
+    var header, payload;
+    try { header = JSON.parse(b64urlDecode(parts[0])); }
+    catch (e) { setStatus('Header is not valid JSON after base64url decoding', 'err'); resultEl.classList.add('hidden'); return; }
+    try { payload = JSON.parse(b64urlDecode(parts[1])); }
+    catch (e) { setStatus('Payload is not valid JSON after base64url decoding', 'err'); resultEl.classList.add('hidden'); return; }
+
+    resultEl.classList.remove('hidden');
+    document.getElementById('hdr').value = JSON.stringify(header, null, 2);
+    document.getElementById('pl').value = JSON.stringify(payload, null, 2);
+    document.getElementById('sig').value = parts[2];
+
+    var rows = [];
+    rows.push(row('Algorithm', header.alg || 'not specified'));
+    rows.push(row('Type', header.typ || 'not specified'));
+
+    if (typeof payload.exp === 'number') {
+      var expired = payload.exp < Date.now() / 1000;
+      rows.push(row('Expires', new Date(payload.exp * 1000).toISOString() +
+        ' <span style="color:' + (expired ? 'var(--danger)' : 'var(--success)') + '">(' + fmtRelative(payload.exp) + ')</span>'));
+    } else {
+      rows.push(row('Expires', '<span style="color:var(--danger)">no exp claim — this token never expires</span>'));
+    }
+    if (typeof payload.iat === 'number') {
+      rows.push(row('Issued at', new Date(payload.iat * 1000).toISOString() + ' (' + fmtRelative(payload.iat) + ')'));
+    }
+    if (typeof payload.nbf === 'number') {
+      rows.push(row('Not before', new Date(payload.nbf * 1000).toISOString() + ' (' + fmtRelative(payload.nbf) + ')'));
+    }
+    if (payload.iss) rows.push(row('Issuer', String(payload.iss)));
+    if (payload.aud) rows.push(row('Audience', String(payload.aud)));
+    if (payload.sub) rows.push(row('Subject', String(payload.sub)));
+
+    document.getElementById('summary').innerHTML = rows.join('');
+
+    if (header.alg === 'none') {
+      setStatus('alg is "none" — unsigned token, anyone can forge this', 'err');
+    } else if (typeof payload.exp === 'number' && payload.exp < Date.now() / 1000) {
+      setStatus('Decoded — token is expired', 'err');
+    } else {
+      setStatus('Decoded — signature NOT verified', 'ok');
+    }
+  }
+
+  document.getElementById('btn-decode').addEventListener('click', decode);
+  tokenEl.addEventListener('input', decode);
+
+  document.getElementById('btn-sample').addEventListener('click', function () {
+    tokenEl.value = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+    decode();
+  });
+
+  document.getElementById('btn-clear').addEventListener('click', function () {
+    tokenEl.value = '';
+    decode();
+    tokenEl.focus();
+  });
+}());
+</script>
+</body>
+</html>

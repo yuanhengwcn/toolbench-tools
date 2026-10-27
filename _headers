@@ -1,0 +1,31 @@
+# Cloudflare Pages / Netlify both read this file.
+# Cloudflare validates it at deploy time and rejects the build on a syntax error.
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=()
+
+# Static assets are content-addressed by filename here, so a long cache is safe
+# as long as you bump the filename when you change a file. If you edit style.css
+# in place, change this to max-age=3600 instead.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# HTML must revalidate, otherwise visitors keep seeing a stale homepage after
+# a deploy for as long as the edge caches it.
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+# NOTE: no Content-Security-Policy yet on purpose. Once AdSense is live it needs
+# script-src and frame-src entries for googlesyndication.com, doubleclick.net and
+# google.com, and a wrong policy silently kills every ad on the site. Add the CSP
+# after the ads are confirmed working, using the AdSense CSP guide as the source.
+
+# Uncomment once the domain is final, so the site is only reachable on HTTPS.
+# /*
+#   Strict-Transport-Security: max-age=31536000; includeSubDomains

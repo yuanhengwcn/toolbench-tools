@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Base64 Encoder &amp; Decoder — Encode Text or Images Online</title>
+<meta name="description" content="Free Base64 encoder and decoder with full UTF-8 support, URL-safe output and image-to-Data-URI conversion. Everything runs locally in your browser.">
+<link rel="canonical" href="https://toolbench-tools.pages.dev/tools/base64.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Base64 Encoder &amp; Decoder">
+<meta property="og:description" content="Encode and decode Base64 with UTF-8 and URL-safe support.">
+<link rel="stylesheet" href="../assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('tb-theme');if(!t){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="../index.html"><span class="brand-mark">T</span>Toolbench</a>
+    <nav class="nav">
+      <a href="../index.html" class="nav-hide-sm">All tools</a>
+      <a href="../about.html" class="nav-hide-sm">About</a>
+      <a href="../contact.html" class="nav-hide-sm">Contact</a>
+      <button class="theme-toggle" type="button" aria-label="Toggle theme">
+        <svg class="ico-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="ico-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="tool-head">
+    <div class="breadcrumb"><a href="../index.html">Tools</a> / Base64 Encoder</div>
+    <h1>Base64 Encoder &amp; Decoder</h1>
+    <p>Convert text to Base64 and back without mangling non-ASCII characters. URL-safe mode and image Data URIs included.</p>
+  </div>
+
+  <div class="panel">
+    <div class="panel-row">
+      <div>
+        <label class="field-label" for="b64-in">Input</label>
+        <textarea id="b64-in" spellcheck="false" placeholder="Type text to encode, or paste Base64 to decode…"></textarea>
+      </div>
+      <div>
+        <label class="field-label" for="b64-out">Output</label>
+        <textarea id="b64-out" spellcheck="false" readonly placeholder="Result appears here"></textarea>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btn-encode" type="button">Encode</button>
+      <button class="btn" id="btn-decode" type="button">Decode</button>
+      <button class="btn" id="btn-swap" type="button">Swap</button>
+      <button class="btn" id="btn-copy" type="button" data-copy="#b64-out">Copy</button>
+      <button class="btn" id="btn-clear" type="button">Clear</button>
+      <label style="display:flex;align-items:center;gap:7px;font-size:13.5px;color:var(--text-muted);cursor:pointer">
+        <input type="checkbox" id="urlsafe"> URL-safe alphabet
+      </label>
+      <span class="status" id="status"></span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <label class="field-label" for="file">Image to Data URI</label>
+    <p style="font-size:13.5px;color:var(--text-muted);margin:0 0 10px">Pick an image to get a ready-to-paste <code>data:</code> URI. The file is read locally and never uploaded.</p>
+    <input type="file" id="file" accept="image/*" style="font-size:13.5px;color:var(--text-muted)">
+    <div id="file-result" class="hidden" style="margin-top:14px">
+      <div style="font-size:13px;color:var(--text-faint);margin-bottom:6px" id="file-meta"></div>
+      <textarea id="file-out" readonly spellcheck="false" style="min-height:120px"></textarea>
+      <div class="btn-row">
+        <button class="btn" type="button" data-copy="#file-out">Copy Data URI</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="ad-slot" data-ad-slot="1234567892">Ad slot &mdash; in-article</div>
+
+  <section class="prose">
+    <h2>What Base64 actually does</h2>
+    <p>Base64 is not encryption and not compression. It is an encoding that rewrites arbitrary bytes using only 64 printable ASCII characters, so binary data can travel through channels that only accept text — email bodies, JSON strings, XML attributes, HTTP headers, data URIs.</p>
+    <p>Every 3 bytes of input become 4 characters of output, which is why Base64 data is about 33% larger than what it encodes. If you are looking at a 4&nbsp;MB Base64 blob, the original was roughly 3&nbsp;MB.</p>
+
+    <h2>Why most Base64 tools corrupt your text</h2>
+    <p>The browser's built-in <code>btoa()</code> only accepts one byte per character. Feed it a Chinese, Arabic or emoji string and it throws <code>InvalidCharacterError</code>, or silently produces mojibake if the caller mangled the input first. The fix is to UTF-8 encode the string into bytes before calling <code>btoa()</code>, and to UTF-8 decode after <code>atob()</code>. This tool does that for you in both directions.</p>
+    <pre><code>// Correct UTF-8 safe encoding
+const bytes = new TextEncoder().encode(text);
+const b64 = btoa(String.fromCharCode(...bytes));
+
+// Correct decoding
+const bin = atob(b64);
+const text = new TextDecoder().decode(Uint8Array.from(bin, c =&gt; c.charCodeAt(0)));</code></pre>
+
+    <h2>Standard vs URL-safe alphabet</h2>
+    <p>Standard Base64 uses <code>+</code> and <code>/</code>, and pads with <code>=</code>. Those characters are problematic in URLs: <code>+</code> is interpreted as a space in query strings, and <code>/</code> collides with path separators. URL-safe Base64 (RFC&nbsp;4648 §5) substitutes <code>-</code> and <code>_</code>, and usually drops the padding. JWT tokens, for example, use URL-safe Base64 without padding.</p>
+    <p>If you are decoding something that came out of a JWT or a signed URL, tick <strong>URL-safe alphabet</strong> first — otherwise you will get a decode error on the first <code>-</code> or <code>_</code>.</p>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details class="faq-item">
+        <summary>Is Base64 secure enough for passwords or API keys?</summary>
+        <p>No. Base64 is fully reversible by anyone — <code>echo 'c2VjcmV0' | base64 -d</code> returns the original. Never treat Base64 as protection. For secrets you need encryption (AES-GCM, age) or a secret manager.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Why does my decoded output contain question marks?</summary>
+        <p>Usually the source was not UTF-8. Windows tools often emit GBK or Latin-1, and those bytes are not valid UTF-8, so the decoder substitutes replacement characters. This tool assumes UTF-8; if your source is another encoding it must be converted before Base64 encoding.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Can I paste a Base64 image and see it?</summary>
+        <p>Decode it and the output will be the raw Data URI text. To view it, paste that string into the address bar of a new tab — browsers render <code>data:image/png;base64,…</code> URLs directly.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Why is the output 33% bigger?</summary>
+        <p>Encoding overhead. 6 bits of payload are stored per 8-bit character, so 3 input bytes expand to 4 output characters. Padding with <code>=</code> accounts for the final partial group.</p>
+      </details>
+    </div>
+
+    <h2>Related tools</h2>
+    <div class="tool-grid" style="margin-top:6px">
+      <a class="tool-card" href="json-formatter.html">
+        <h3>JSON Formatter</h3>
+        <p>Beautify the payloads you just decoded.</p>
+      </a>
+      <a class="tool-card" href="uuid-generator.html">
+        <h3>UUID Generator</h3>
+        <p>Create random identifiers for your records.</p>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <div>
+      <div class="footer-links">
+        <a href="../index.html">Tools</a>
+        <a href="../about.html">About</a>
+        <a href="../contact.html">Contact</a>
+        <a href="../privacy.html">Privacy</a>
+        <a href="../terms.html">Terms</a>
+      </div>
+      <p class="footer-note" style="margin-top:12px">&copy; <span data-year>2026</span> Toolbench. All processing happens locally in your browser.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/app.js"></script>
+<script>
+(function () {
+  'use strict';
+  var inp = document.getElementById('b64-in');
+  var out = document.getElementById('b64-out');
+  var statusEl = document.getElementById('status');
+  var urlsafe = document.getElementById('urlsafe');
+
+  function setStatus(msg, kind) {
+    statusEl.textContent = msg;
+    statusEl.className = 'status' + (kind ? ' ' + kind : '');
+  }
+
+  function toBase64(text) {
+    var bytes = new TextEncoder().encode(text);
+    var chunk = 0x8000;
+    var parts = [];
+    for (var i = 0; i < bytes.length; i += chunk) {
+      parts.push(String.fromCharCode.apply(null, bytes.subarray(i, i + chunk)));
+    }
+    var b64 = btoa(parts.join(''));
+    if (urlsafe.checked) b64 = b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    return b64;
+  }
+
+  function fromBase64(str) {
+    var s = str.replace(/\s+/g, '');
+    if (urlsafe.checked || /[-_]/.test(s)) s = s.replace(/-/g, '+').replace(/_/g, '/');
+    while (s.length % 4) s += '=';
+    var bin = atob(s);
+    var bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder('utf-8', { fatal: false }).decode(bytes);
+  }
+
+  function run(fn) {
+    var raw = inp.value;
+    if (!raw) { setStatus('Nothing to convert', 'err'); return; }
+    try {
+      out.value = fn(raw);
+      setStatus('Done', 'ok');
+    } catch (err) {
+      out.value = '';
+      setStatus('Not valid Base64 for the selected alphabet', 'err');
+    }
+  }
+
+  document.getElementById('btn-encode').addEventListener('click', function () { run(toBase64); });
+  document.getElementById('btn-decode').addEventListener('click', function () { run(fromBase64); });
+
+  document.getElementById('btn-swap').addEventListener('click', function () {
+    if (!out.value) { setStatus('Nothing to swap', 'err'); return; }
+    inp.value = out.value;
+    out.value = '';
+    setStatus('');
+  });
+
+  document.getElementById('btn-clear').addEventListener('click', function () {
+    inp.value = ''; out.value = ''; setStatus(''); inp.focus();
+  });
+
+  document.getElementById('file').addEventListener('change', function (e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setStatus('File is over 5 MB — the Data URI would be huge', 'err');
+    }
+    var reader = new FileReader();
+    reader.onload = function () {
+      var dataUri = String(reader.result);
+      document.getElementById('file-result').classList.remove('hidden');
+      document.getElementById('file-out').value = dataUri;
+      var growth = Math.round(dataUri.length / file.size * 100);
+      document.getElementById('file-meta').textContent =
+        file.name + ' \u00b7 ' + (file.size / 1024).toFixed(1) + ' KB \u2192 ' +
+        (dataUri.length / 1024).toFixed(1) + ' KB (' + growth + '% of original)';
+    };
+    reader.readAsDataURL(file);
+  });
+}());
+</script>
+</body>
+</html>

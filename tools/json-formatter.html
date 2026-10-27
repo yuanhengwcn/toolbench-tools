@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JSON Formatter &amp; Validator — Beautify, Minify, Check JSON Online</title>
+<meta name="description" content="Free online JSON formatter and validator. Beautify messy JSON, minify it for production, and get exact error positions with line and column numbers. Runs entirely in your browser.">
+<link rel="canonical" href="https://toolbench-tools.pages.dev/tools/json-formatter.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="JSON Formatter &amp; Validator">
+<meta property="og:description" content="Beautify, minify and validate JSON with precise error positions.">
+<link rel="stylesheet" href="../assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('tb-theme');if(!t){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="../index.html"><span class="brand-mark">T</span>Toolbench</a>
+    <nav class="nav">
+      <a href="../index.html" class="nav-hide-sm">All tools</a>
+      <a href="../about.html" class="nav-hide-sm">About</a>
+      <a href="../contact.html" class="nav-hide-sm">Contact</a>
+      <button class="theme-toggle" type="button" aria-label="Toggle theme">
+        <svg class="ico-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="ico-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="tool-head">
+    <div class="breadcrumb"><a href="../index.html">Tools</a> / JSON Formatter</div>
+    <h1>JSON Formatter &amp; Validator</h1>
+    <p>Paste JSON to reformat it with consistent indentation, collapse it to a single line, or check exactly where a syntax error is.</p>
+  </div>
+
+  <div class="panel">
+    <div class="panel-row">
+      <div>
+        <label class="field-label" for="json-in">Input</label>
+        <textarea id="json-in" spellcheck="false" placeholder='{"name":"toolbench","tags":["json","format"],"ok":true}'></textarea>
+      </div>
+      <div>
+        <label class="field-label" for="json-out">Output</label>
+        <textarea id="json-out" spellcheck="false" readonly placeholder="Formatted JSON appears here"></textarea>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btn-format" type="button">Format</button>
+      <button class="btn" id="btn-minify" type="button">Minify</button>
+      <button class="btn" id="btn-sort" type="button">Sort keys</button>
+      <button class="btn" id="btn-copy" type="button" data-copy="#json-out">Copy</button>
+      <button class="btn" id="btn-sample" type="button">Load sample</button>
+      <button class="btn" id="btn-clear" type="button">Clear</button>
+      <select id="indent" aria-label="Indentation">
+        <option value="2">2 spaces</option>
+        <option value="4">4 spaces</option>
+        <option value="\t">Tab</option>
+      </select>
+    </div>
+
+    <div style="display:flex;gap:16px;margin-top:12px;font-size:12.5px;color:var(--text-faint)">
+      <span id="stats">&nbsp;</span>
+      <span id="status" style="margin-left:auto"></span>
+    </div>
+  </div>
+
+  <div class="ad-slot" data-ad-slot="1234567891">Ad slot &mdash; in-article</div>
+
+  <section class="prose">
+    <h2>How to use this JSON formatter</h2>
+    <ol>
+      <li>Paste or type your JSON into the left box.</li>
+      <li>Press <strong>Format</strong> to reindent it, or <strong>Minify</strong> to strip every unnecessary character.</li>
+      <li>Copy the result with the <strong>Copy</strong> button, or drag-select from the output box.</li>
+    </ol>
+    <p>If the JSON is invalid, this tool reports the line and column where parsing failed along with a snippet of the surrounding text, so you can jump straight to the problem instead of hunting through a 4,000-line payload.</p>
+
+    <h2>Format or minify — which one do you need</h2>
+    <p>Pretty-printed JSON is for humans: it uses newlines and indentation so nested structures are readable, at the cost of a much larger payload. Minified JSON removes all optional whitespace and is what you want in production — in an API response, a config file that ships with an app, or a fixture you commit to a repository.</p>
+    <p>The practical rule: minify what machines read, format what you read. If you are debugging a response, format it. If you are pasting a value into a header or an environment variable, minify it.</p>
+
+    <h2>Common JSON syntax errors this catches</h2>
+    <ul>
+      <li><strong>Trailing commas.</strong> <code>{"a":1,}</code> is invalid in JSON, even though JavaScript object literals allow it.</li>
+      <li><strong>Single quotes.</strong> JSON strings must use double quotes. <code>{'a':1}</code> is not valid JSON.</li>
+      <li><strong>Unquoted keys.</strong> <code>{a:1}</code> fails — every object key must be a quoted string.</li>
+      <li><strong>Comments.</strong> JSON has no comment syntax. <code>//</code> or <code>/* */</code> will break parsing.</li>
+      <li><strong>Missing commas.</strong> Elements in an array or object must be separated by commas.</li>
+      <li><strong>Unescaped control characters.</strong> A literal newline inside a string is invalid; it must be written as <code>\n</code>.</li>
+    </ul>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details class="faq-item">
+        <summary>Is my JSON uploaded anywhere?</summary>
+        <p>No. Parsing and formatting run in JavaScript inside this browser tab. The page works with the network disconnected, and no request is made with your input.</p>
+      </details>
+      <details class="faq-item">
+        <summary>How large a file can it handle?</summary>
+        <p>Comfortably up to a few megabytes. Beyond roughly 10&nbsp;MB the bottleneck becomes the browser's text rendering rather than the JSON parser, and the page may feel sluggish.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Does it preserve key order?</summary>
+        <p>Yes. <code>JSON.parse</code> keeps insertion order, with one exception: keys that look like array indices (for example <code>"0"</code>, <code>"1"</code>) are ordered numerically first, because that is how JavaScript objects behave. Use <strong>Sort keys</strong> if you want a deterministic alphabetical order.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Why does it reject JSON that a YAML parser accepts?</summary>
+        <p>Because YAML is a superset of JSON, not the other way around. YAML tolerates comments, unquoted strings and indentation-based nesting, all of which JSON forbids. This tool validates strictly against RFC&nbsp;8259.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Can it convert JSON to another format?</summary>
+        <p>Not yet — JSON to CSV, YAML and TypeScript interfaces are on the roadmap. The <a href="../contact.html">contact page</a> is the fastest way to move one up the list.</p>
+      </details>
+    </div>
+
+    <h2>Related tools</h2>
+    <div class="tool-grid" style="margin-top:6px">
+      <a class="tool-card" href="base64.html">
+        <h3>Base64 Encoder</h3>
+        <p>Encode JSON payloads for transport.</p>
+      </a>
+      <a class="tool-card" href="timestamp-converter.html">
+        <h3>Timestamp Converter</h3>
+        <p>Turn the epoch values inside your payload into dates.</p>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <div>
+      <div class="footer-links">
+        <a href="../index.html">Tools</a>
+        <a href="../about.html">About</a>
+        <a href="../contact.html">Contact</a>
+        <a href="../privacy.html">Privacy</a>
+        <a href="../terms.html">Terms</a>
+      </div>
+      <p class="footer-note" style="margin-top:12px">&copy; <span data-year>2026</span> Toolbench. All processing happens locally in your browser.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/app.js"></script>
+<script>
+(function () {
+  'use strict';
+  var inp = document.getElementById('json-in');
+  var out = document.getElementById('json-out');
+  var statusEl = document.getElementById('status');
+  var statsEl = document.getElementById('stats');
+  var indentSel = document.getElementById('indent');
+
+  function setStatus(msg, kind) {
+    statusEl.textContent = msg;
+    statusEl.className = 'status' + (kind ? ' ' + kind : '');
+  }
+
+  function byteLen(str) {
+    if (window.TextEncoder) return new TextEncoder().encode(str).length;
+    return unescape(encodeURIComponent(str)).length;
+  }
+
+  function lineCol(text, pos) {
+    var before = text.slice(0, pos);
+    var line = before.split('\n').length;
+    var col = pos - before.lastIndexOf('\n');
+    return { line: line, col: col };
+  }
+
+  function describeError(text, err) {
+    var msg = err && err.message ? err.message : String(err);
+    var m = msg.match(/position\s+(\d+)/i);
+    if (!m) return msg;
+    var pos = parseInt(m[1], 10);
+    var lc = lineCol(text, pos);
+    var start = Math.max(0, pos - 40);
+    var snippet = text.slice(start, pos + 40).replace(/\n/g, '\u21b5');
+    return 'Invalid JSON at line ' + lc.line + ', column ' + lc.col + ' \u2014 ' + msg + '\n\u2026' + snippet + '\u2026';
+  }
+
+  function parse() {
+    var raw = inp.value;
+    if (!raw.trim()) {
+      setStatus('Nothing to parse', 'err');
+      return null;
+    }
+    try {
+      return { value: JSON.parse(raw) };
+    } catch (err) {
+      setStatus(describeError(raw, err), 'err');
+      return null;
+    }
+  }
+
+  function render(value, indent) {
+    return JSON.stringify(value, null, indent === '\t' ? '\t' : Number(indent));
+  }
+
+  function report(result) {
+    var bytes = byteLen(result);
+    var lines = result.split('\n').length;
+    out.value = result;
+    statsEl.textContent = bytes.toLocaleString() + ' bytes \u00b7 ' + lines.toLocaleString() + ' line' + (lines === 1 ? '' : 's');
+  }
+
+  function withParsed(fn) {
+    var parsed = parse();
+    if (!parsed) return;
+    try {
+      var result = fn(parsed.value);
+      report(result);
+      setStatus('Valid JSON', 'ok');
+    } catch (err) {
+      setStatus(err.message, 'err');
+    }
+  }
+
+  function sortKeys(value) {
+    if (Array.isArray(value)) return value.map(sortKeys);
+    if (value && typeof value === 'object') {
+      var out = {};
+      Object.keys(value).sort().forEach(function (k) { out[k] = sortKeys(value[k]); });
+      return out;
+    }
+    return value;
+  }
+
+  document.getElementById('btn-format').addEventListener('click', function () {
+    withParsed(function (v) { return render(v, indentSel.value); });
+  });
+
+  document.getElementById('btn-minify').addEventListener('click', function () {
+    withParsed(function (v) { return JSON.stringify(v); });
+  });
+
+  document.getElementById('btn-sort').addEventListener('click', function () {
+    withParsed(function (v) { return render(sortKeys(v), indentSel.value); });
+  });
+
+  document.getElementById('btn-clear').addEventListener('click', function () {
+    inp.value = '';
+    out.value = '';
+    statsEl.textContent = '';
+    setStatus('');
+    inp.focus();
+  });
+
+  document.getElementById('btn-sample').addEventListener('click', function () {
+    inp.value = '{\n  "service": "toolbench",\n  "version": 2,\n  "private": true,\n  "tools": ["json-formatter", "base64", "uuid"],\n  "limits": { "maxSizeMb": 10, "rateLimited": false, "retries": 3 },\n  "owner": { "name": "You", "email": "hello@example.com" }\n}';
+    inp.dispatchEvent(new Event('input'));
+  });
+
+  // Keep the output in sync when the user switches indentation after formatting.
+  indentSel.addEventListener('change', function () {
+    if (out.value) {
+      withParsed(function (v) { return render(v, indentSel.value); });
+    }
+  });
+
+  // Warn on paste of obviously broken JSON as you type — cheap, no debounce needed.
+  inp.addEventListener('input', function () {
+    if (inp.value.length > 500000) return;
+    var raw = inp.value.trim();
+    if (!raw) { setStatus(''); statsEl.textContent = ''; return; }
+    try {
+      JSON.parse(raw);
+      setStatus('Valid JSON', 'ok');
+    } catch (e) {
+      setStatus('Invalid JSON so far', 'err');
+    }
+  });
+}());
+</script>
+</body>
+</html>

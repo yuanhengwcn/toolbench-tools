@@ -1,0 +1,9 @@
+# ads.txt — Authorized Digital Sellers
+#
+# Files must be plain text, served from the domain root, no HTML.
+# Uncomment and fill in your publisher ID AFTER AdSense approves the site.
+# The pub ID is on the AdSense dashboard under Account > Settings > Account information.
+#
+# Format: <exchange domain>, <publisher account ID>, <relationship>, <certification authority ID>
+#
+# google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0

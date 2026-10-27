@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unix Timestamp Converter — Epoch to Date and Back</title>
+<meta name="description" content="Convert Unix timestamps to human-readable dates and back. Handles seconds, milliseconds, microseconds and nanoseconds, with local time, UTC and ISO 8601 output.">
+<link rel="canonical" href="https://toolbench-tools.pages.dev/tools/timestamp-converter.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Unix Timestamp Converter">
+<meta property="og:description" content="Convert epoch time to dates in any timezone, and back again.">
+<link rel="stylesheet" href="../assets/style.css">
+<script>
+(function(){try{var t=localStorage.getItem('tb-theme');if(!t){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="../index.html"><span class="brand-mark">T</span>Toolbench</a>
+    <nav class="nav">
+      <a href="../index.html" class="nav-hide-sm">All tools</a>
+      <a href="../about.html" class="nav-hide-sm">About</a>
+      <a href="../contact.html" class="nav-hide-sm">Contact</a>
+      <button class="theme-toggle" type="button" aria-label="Toggle theme">
+        <svg class="ico-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="ico-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="tool-head">
+    <div class="breadcrumb"><a href="../index.html">Tools</a> / Timestamp Converter</div>
+    <h1>Unix Timestamp Converter</h1>
+    <p>Paste an epoch value and get a full breakdown, or pick a date and get its timestamp. Unit is detected automatically.</p>
+  </div>
+
+  <div class="panel" style="display:flex;flex-wrap:wrap;gap:20px;align-items:center">
+    <div>
+      <div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint);margin-bottom:4px">Right now</div>
+      <div id="now-sec" style="font-family:var(--mono);font-size:24px;font-weight:600;letter-spacing:-.02em">—</div>
+      <div id="now-ms" style="font-family:var(--mono);font-size:12.5px;color:var(--text-faint)">—</div>
+    </div>
+    <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" id="btn-use-now" type="button">Use current time</button>
+      <button class="btn" id="btn-copy-now" type="button" data-copy="#now-sec">Copy seconds</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <label class="field-label" for="ts-in">Timestamp <span style="font-weight:400;color:var(--text-faint)">(seconds, milliseconds, microseconds or nanoseconds)</span></label>
+    <input type="text" id="ts-in" inputmode="numeric" placeholder="1735689600" style="font-size:15px">
+
+    <table style="width:100%;border-collapse:collapse;margin-top:16px;font-size:14px">
+      <tbody id="result-body">
+        <tr><td style="color:var(--text-muted);padding:7px 0;width:150px">Local time</td><td id="r-local" style="font-family:var(--mono)">—</td></tr>
+        <tr><td style="color:var(--text-muted);padding:7px 0">UTC</td><td id="r-utc" style="font-family:var(--mono)">—</td></tr>
+        <tr><td style="color:var(--text-muted);padding:7px 0">ISO 8601</td><td id="r-iso" style="font-family:var(--mono)">—</td></tr>
+        <tr><td style="color:var(--text-muted);padding:7px 0">Detected unit</td><td id="r-unit" style="font-family:var(--mono)">—</td></tr>
+        <tr><td style="color:var(--text-muted);padding:7px 0">Relative</td><td id="r-rel" style="font-family:var(--mono)">—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="panel">
+    <label class="field-label" for="date-in">Date and time (your local timezone)</label>
+    <input type="datetime-local" id="date-in" step="1" style="font-family:var(--mono);font-size:14px;padding:10px 12px;border:1px solid var(--border-strong);border-radius:7px;background:var(--code-bg);color:var(--text);width:100%">
+    <table style="width:100%;border-collapse:collapse;margin-top:16px;font-size:14px">
+      <tbody>
+        <tr><td style="color:var(--text-muted);padding:7px 0;width:150px">Unix seconds</td><td id="d-sec" style="font-family:var(--mono)">—</td></tr>
+        <tr><td style="color:var(--text-muted);padding:7px 0">Unix milliseconds</td><td id="d-ms" style="font-family:var(--mono)">—</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:12.5px;color:var(--text-faint);margin:12px 0 0" id="tz-note"></p>
+  </div>
+
+  <div class="ad-slot" data-ad-slot="1234567894">Ad slot &mdash; in-article</div>
+
+  <section class="prose">
+    <h2>What the Unix epoch is</h2>
+    <p>Epoch time counts the seconds elapsed since <strong>00:00:00 UTC on 1 January 1970</strong>, ignoring leap seconds. It is the default timestamp representation in Unix, in most databases, and in nearly every JSON API. Because it is an absolute instant with no timezone attached, it is unambiguous — unlike <code>"2026-01-01 09:00"</code>, which means different moments depending on where you are standing.</p>
+
+    <h2>Seconds, milliseconds, or something else</h2>
+    <p>The classic failure mode is passing milliseconds where seconds are expected, which silently lands you 50,000 years in the future. With no explicit unit, length is the practical heuristic:</p>
+    <ul>
+      <li><strong>10 digits</strong> — seconds. <code>1735689600</code> is January 2025.</li>
+      <li><strong>13 digits</strong> — milliseconds. This is what JavaScript's <code>Date.now()</code> returns.</li>
+      <li><strong>16 digits</strong> — microseconds. Common in Postgres <code>timestamptz</code> dumps and Python's <code>time.time_ns()/1000</code>.</li>
+      <li><strong>19 digits</strong> — nanoseconds. Go's <code>time.Now().UnixNano()</code> lands here.</li>
+    </ul>
+    <p>This tool detects the unit from the digit count and tells you which one it picked, so you can spot a mis-scaled value immediately.</p>
+
+    <h2>The year 2038 problem</h2>
+    <p>Timestamps stored as a signed 32-bit integer overflow at <code>03:14:07 UTC on 19 January 2038</code>. MySQL's <code>TIMESTAMP</code> column, 32-bit <code>time_t</code> on older systems, and plenty of embedded devices are exposed. The fix is to widen the storage to 64 bits before that date arrives — a schema change most people postpone until it is urgent.</p>
+
+    <h2>Working with timestamps in code</h2>
+    <pre><code>// JavaScript
+Date.now();                        // ms
+Math.floor(Date.now() / 1000);     // s
+new Date(1735689600 * 1000).toISOString();
+
+# Python
+import datetime
+datetime.datetime.now(datetime.timezone.utc).timestamp()
+datetime.datetime.fromtimestamp(1735689600, datetime.timezone.utc)
+
+// Java
+Instant.now().getEpochSecond();
+Instant.ofEpochSecond(1735689600);</code></pre>
+
+    <h2>Frequently asked questions</h2>
+    <div class="faq">
+      <details class="faq-item">
+        <summary>Why is my converted time off by exactly a whole number of hours?</summary>
+        <p>Timezone, not the timestamp. Epoch values are UTC by definition; the "local time" row here applies your browser's configured zone, while the UTC row shows the raw instant. If they differ by 8 hours you are likely in UTC+8.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Does this account for leap seconds?</summary>
+        <p>No, and neither does Unix time itself — leap seconds are deliberately ignored so that every day has exactly 86,400 seconds. For civil time that matters, use TAI or a time library with a leap-second table.</p>
+      </details>
+      <details class="faq-item">
+        <summary>What is negative epoch time?</summary>
+        <p>Timestamps before 1970. <code>-86400</code> is 31 December 1969, 00:00 UTC. They are perfectly valid and supported here.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Should I store seconds or milliseconds?</summary>
+        <p>Whichever your stack is consistent about — the bug is never the unit itself, it is mixing two. Seconds keep the value readable and fit in a 32-bit integer until 2038; milliseconds match JavaScript's native <code>Date</code> and avoid conversion on the client.</p>
+      </details>
+    </div>
+
+    <h2>Related tools</h2>
+    <div class="tool-grid" style="margin-top:6px">
+      <a class="tool-card" href="json-formatter.html">
+        <h3>JSON Formatter</h3>
+        <p>Pretty-print payloads full of epoch values.</p>
+      </a>
+      <a class="tool-card" href="uuid-generator.html">
+        <h3>UUID Generator</h3>
+        <p>Create identifiers for the records you are timestamping.</p>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <div>
+      <div class="footer-links">
+        <a href="../index.html">Tools</a>
+        <a href="../about.html">About</a>
+        <a href="../contact.html">Contact</a>
+        <a href="../privacy.html">Privacy</a>
+        <a href="../terms.html">Terms</a>
+      </div>
+      <p class="footer-note" style="margin-top:12px">&copy; <span data-year>2026</span> Toolbench. All processing happens locally in your browser.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/app.js"></script>
+<script>
+(function () {
+  'use strict';
+  var tsIn = document.getElementById('ts-in');
+  var dateIn = document.getElementById('date-in');
+  var nowSec = document.getElementById('now-sec');
+  var nowMs = document.getElementById('now-ms');
+  var tzNote = document.getElementById('tz-note');
+
+  tzNote.textContent = 'Your timezone: ' + (Intl.DateTimeFormat().resolvedOptions().timeZone || 'unknown') +
+    ' (UTC' + (new Date().getTimezoneOffset() > 0 ? '-' : '+') +
+    Math.abs(new Date().getTimezoneOffset() / 60) + ')';
+
+  function pad(n, w) {
+    n = String(Math.abs(n));
+    while (n.length < (w || 2)) n = '0' + n;
+    return n;
+  }
+
+  function detectUnit(digits) {
+    var n = digits.replace(/^[-+]/, '').length;
+    if (n <= 10) return { key: 'seconds', ms: Number(digits) * 1000, div: 1 };
+    if (n <= 13) return { key: 'milliseconds', ms: Number(digits), div: 1000 };
+    if (n <= 16) return { key: 'microseconds', ms: Math.floor(Number(digits) / 1000), div: 1e6 };
+    return { key: 'nanoseconds', ms: Math.floor(Number(digits) / 1e6), div: 1e9 };
+  }
+
+  function relative(ms) {
+    var diff = Date.now() - ms;
+    var abs = Math.abs(diff);
+    var units = [
+      [31536000000, 'year'], [2592000000, 'month'], [604800000, 'week'],
+      [86400000, 'day'], [3600000, 'hour'], [60000, 'minute'], [1000, 'second']
+    ];
+    for (var i = 0; i < units.length; i++) {
+      if (abs >= units[i][0]) {
+        var v = Math.round(abs / units[i][0]);
+        var label = v + ' ' + units[i][1] + (v === 1 ? '' : 's');
+        return diff >= 0 ? label + ' ago' : 'in ' + label;
+      }
+    }
+    return 'just now';
+  }
+
+  function localString(d) {
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' +
+           pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds()) +
+           ' (UTC' + (d.getTimezoneOffset() > 0 ? '-' : '+') +
+           pad(Math.abs(d.getTimezoneOffset() / 60)) + ':' + pad(Math.abs(d.getTimezoneOffset() % 60)) + ')';
+  }
+
+  function utcString(d) {
+    return d.getUTCFullYear() + '-' + pad(d.getUTCMonth() + 1) + '-' + pad(d.getUTCDate()) + ' ' +
+           pad(d.getUTCHours()) + ':' + pad(d.getUTCMinutes()) + ':' + pad(d.getUTCSeconds()) + ' UTC';
+  }
+
+  function convertFromTimestamp() {
+    var raw = tsIn.value.trim().replace(/[,\s]/g, '');
+    if (!raw) {
+      ['r-local', 'r-utc', 'r-iso', 'r-unit', 'r-rel'].forEach(function (id) {
+        document.getElementById(id).textContent = '—';
+      });
+      return;
+    }
+    if (!/^[-+]?\d+$/.test(raw)) {
+      document.getElementById('r-local').textContent = 'Not a numeric timestamp';
+      ['r-utc', 'r-iso', 'r-unit', 'r-rel'].forEach(function (id) {
+        document.getElementById(id).textContent = '—';
+      });
+      return;
+    }
+    var u = detectUnit(raw);
+    var d = new Date(u.ms);
+    if (isNaN(d.getTime())) {
+      document.getElementById('r-local').textContent = 'Out of range';
+      return;
+    }
+    document.getElementById('r-local').textContent = localString(d);
+    document.getElementById('r-utc').textContent = utcString(d);
+    document.getElementById('r-iso').textContent = d.toISOString();
+    document.getElementById('r-unit').textContent = u.key + ' (detected from digit count)';
+    document.getElementById('r-rel').textContent = relative(u.ms);
+  }
+
+  function convertFromDate() {
+    if (!dateIn.value) {
+      document.getElementById('d-sec').textContent = '—';
+      document.getElementById('d-ms').textContent = '—';
+      return;
+    }
+    var d = new Date(dateIn.value);
+    if (isNaN(d.getTime())) {
+      document.getElementById('d-sec').textContent = 'Invalid date';
+      document.getElementById('d-ms').textContent = '—';
+      return;
+    }
+    document.getElementById('d-sec').textContent = Math.floor(d.getTime() / 1000);
+    document.getElementById('d-ms').textContent = d.getTime();
+  }
+
+  function tick() {
+    var now = Date.now();
+    nowSec.textContent = Math.floor(now / 1000);
+    nowMs.textContent = now + ' ms';
+  }
+
+  // Populate the datetime-local input with the current local time, second precision.
+  function setDateInputNow() {
+    var d = new Date();
+    dateIn.value = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) +
+                   'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+  }
+
+  document.getElementById('btn-use-now').addEventListener('click', function () {
+    tsIn.value = Math.floor(Date.now() / 1000);
+    setDateInputNow();
+    convertFromTimestamp();
+    convertFromDate();
+  });
+
+  tsIn.addEventListener('input', convertFromTimestamp);
+  dateIn.addEventListener('input', convertFromDate);
+
+  tick();
+  setDateInputNow();
+  convertFromDate();
+  setInterval(function () {
+    if (!document.hidden) tick();
+  }, 1000);
+}());
+</script>
+</body>
+</html>
